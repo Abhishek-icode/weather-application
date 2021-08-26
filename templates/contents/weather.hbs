@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+        integrity="sha512-PgQMlq+nqFLV4ylk1gwUOgm6CtIIXkKwaIHp/PAIWHzig/lKZSEGKEysh0TCVbHJXCLN7WetD8TFecIky75ZfQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="images/2067177-01.jpeg" type="image/jpeg">
+
+    <title>Check weather</title>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark container-fluid mynav">
+        <a class="navbar-brand" href="/" style="font-size: 1.5rem;"> <i class="far fa-snowflake"></i> <strong> AK
+                weather</strong> <i class="far fa-snowflake"></i> </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Home</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="/weather">Weather</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/about">About us</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <form class="temp">
+        <input type="text" id="cityname" placeholder="Enter Your City Name" autocomplete="off">
+        <input type="submit" value="search" id="submitbtn">
+    </form>
+    <div class="box">
+        <div class="wave one"></div>
+        <div class="wave two"></div>
+        <div class="wave three"></div>
+
+        <div class="weather middle hide" id="tempstatus"></div>
+        <div class="weatherinfo">
+            <div id="maininfo" class="datahide">
+                <i class="fas fa-map-marker-alt hide"></i>
+                <h2 id="locate"></i>Get output here</h2>
+            </div>
+            <h3 id="minmax" class="hide" style="color:white;"></h3>
+            <div id="todays">
+                <h3 id="weekedays"></h3>
+            </div>
+        </div>
+    </div>
+    {{>footer}}
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <script>
+
+        const submitbtn = document.getElementById('submitbtn')
+        const locate = document.getElementById('locate')
+        const tempstatus = document.getElementById('tempstatus')
+        const datahide = document.querySelector('.datahide')
+        const minmax = document.getElementById('minmax')
+
+        const getinfo = async (event) => {
+            event.preventDefault();
+            let cityval = cityname.value;
+
+            if (cityval === '') {
+                locate.innerText = `Plz write the name on search bar`
+                datahide.classList.add('hide')
+            } else {
+                try {
+                    let url = `https://api.openweathermap.org/data/2.5/weather?q=${cityval}&appid=3b5b770eb1c757c9294345a09164e446`
+                    const response = await fetch(url)
+                    const data = await response.json();
+                    const arrdata = [data];
+                    const destemp = arrdata[0].main.temp / 10;
+                    const t = destemp.toFixed(1)
+                    const mtemp = arrdata[0].main.temp_min / 10;
+                    const mt = mtemp.toFixed(1)
+                    const xtemp = arrdata[0].main.temp_max / 10;
+                    const xt = xtemp.toFixed(1)
+
+                    locate.innerText = `${arrdata[0].name}, ${arrdata[0].sys.country}    ${t}'C`
+                    minmax.innerText = `Min ${mt} | Max ${xt}`
+                    tempmood = arrdata[0].weather[0].main;
+
+                    if (tempmood == "Sunny") {
+                        tempstatus.innerHTML = "<i class='fas fa-sun' style='color: rgb(255, 196, 0);'></i>"
+                    } else if (tempmood == "Clouds") {
+                        tempstatus.innerHTML = "<i class='fas fa-cloud' style='color: #2fb9f5;'></i>"
+                    } else if (tempmood == "Rainy") {
+                        tempstatus.innerHTML = "<i class='fas fa-cloud-rain' style='color: rgb(0, 98, 255);'></i>"
+                    } else if (tempmood == "Clear") {
+                        tempstatus.innerHTML = "<i class='fas fa-moon' style='color: rgb(255, 196, 0);'></i>"
+                    } else if (tempmood == "Haze") {
+                        tempstatus.innerHTML = "<i class='fas fa-smog' style='color: rgb(106, 91, 194);'></i>"
+                    } else {
+                        tempstatus.innerHTML = "<i class='fas fa-sun' style='color: rgb(119, 156, 242);'></i>"
+                    }
+                    datahide.classList.remove('hide')
+
+                } catch {
+                    locate.innerText = `Plz write the Correct name`
+                    datahide.classList.add('hide')
+                }
+
+            }
+        }
+
+        submitbtn.addEventListener('click', getinfo)
+
+        var d = new Date();
+        var weekday = new Array(7);
+        weekday[0] = "Sunday";
+        weekday[1] = "Monday";
+        weekday[2] = "Tuesday";
+        weekday[3] = "Wednesday";
+        weekday[4] = "Thursday";
+        weekday[5] = "Friday";
+        weekday[6] = "Saturday";
+
+        var n = weekday[d.getDay()];
+
+        var month = new Array();
+        month[0] = "January";
+        month[1] = "February";
+        month[2] = "March";
+        month[3] = "April";
+        month[4] = "May";
+        month[5] = "June";
+        month[6] = "July";
+        month[7] = "August";
+        month[8] = "September";
+        month[9] = "October";
+        month[10] = "November";
+        month[11] = "December";
+
+        var d = new Date();
+        var m = month[d.getMonth()];
+        document.getElementById("weekedays").innerText = `${n},  ${d.getDate()} ${m}`;
+    </script>
+</body>
+
+</html>
